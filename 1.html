@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Saver</title>
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #36d1dc, #5b86e5); /* Use `background` instead of `background-color` */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 400px; /* Increased width of the container */
+            text-align: center; /* Centers the content inside the container */
+            position: relative; /* For absolute positioning of the glowing effect */
+            transition: box-shadow 0.3s ease-in-out; /* Smooth transition for box-shadow */
+        }
+
+        /* Glowing effect */
+        .container:hover {
+            box-shadow: 0 0 20px rgba(54, 209, 220, 0.7), 0 0 30px rgba(91, 134, 229, 0.7);
+        }
+
+        h1 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 1.2em; /* Style for the Saved Password header */
+            font-weight: bold; /* Makes the header bold */
+            margin-top: 20px; /* Adds some margin above the header */
+            color: #333; /* Header color */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input {
+            width: 80%; /* Adjust the width to look centered */
+            padding: 10px;
+            margin: 10px auto; /* Centers the input fields horizontally */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            display: block; /* Ensures it respects the margin */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: white;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Saver</h1>
+        <form id="passwordForm">
+            <label for="account">Account Name</label>
+            <input type="text" id="account" name="account" placeholder="e.g., Gmail, Bank" required>
+
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit">Save</button>
+        </form>
+
+        <div id="output" style="margin-top: 20px; color: #333;"></div>
+
+        <!-- New header above the table -->
+        <h2>Saved Passwords</h2>
+
+        <table id="passwordTable">
+            <thead>
+                <tr>
+                    <th>Account</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Saved passwords will appear here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const form = document.getElementById('passwordForm');
+        const passwordTable = document.getElementById('passwordTable').getElementsByTagName('tbody')[0];
+
+        let savedPasswords = []; // Array to store all passwords
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            const account = document.getElementById('account').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Add new password entry to the savedPasswords array
+            savedPasswords.push({ account, username, password });
+
+            // Add new row to the table
+            const newRow = passwordTable.insertRow();
+            newRow.innerHTML = `
+                <td>${account}</td>
+                <td>${username}</td>
+                <td>${password}</td>
+                <td><button class="delete-btn" onclick="deletePassword(${savedPasswords.length - 1})">Delete</button></td>
+            `;
+
+            // Clear form fields
+            form.reset();
+        });
+
+        // Function to delete a password entry
+        function deletePassword(index) {
+            // Remove the password from the array
+            savedPasswords.splice(index, 1);
+
+            // Remove the row from the table
+            passwordTable.deleteRow(index);
+
+            // Update the index of each remaining delete button to maintain proper functionality
+            for (let i = 0; i < passwordTable.rows.length; i++) {
+                const deleteButton = passwordTable.rows[i].cells[3].getElementsByTagName('button')[0];
+                deleteButton.setAttribute('onclick', `deletePassword(${i})`);
+            }
+        }
+    </script>
+</body>
+</html>
